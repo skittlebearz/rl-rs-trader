@@ -1,5 +1,10 @@
 # rl-rs-trader
 
+### Additional resources
+  - Pdf report of project details (Final-Project-Report.pdf in repo)
+  - Slide show of project overview (Final-Slides in repo)
+  - Link to slide presentation - https://youtu.be/LddPK043qfw
+
 ### Required packages (should be obtainable from pip-install)
   - torch
   - numpy
