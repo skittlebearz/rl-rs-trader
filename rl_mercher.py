@@ -14,16 +14,24 @@ from dqn_agent import DQNAgent
 
 
 def trainAgent():
+
+    #CONFIGURABLE PARAMS
+    decay = .997
+    min_rand = .1
+    training_episodes = 1500
+
+
+
     model_load_name = ""
     target_model_load_name = ""
     args = sys.argv
     print(args)
-    agent_type = args[1]
-    model_save_name = args[2]
-    if len(args) > 3:
-        model_load_name = args[3]
+    agent_type = args[2]
+    model_save_name = args[3]
     if len(args) > 4:
-        target_model_load_name = args[4]
+        model_load_name = args[4]
+    if len(args) > 5:
+        target_model_load_name = args[5]
 
     itemDF = pd.read_csv('./item_data.csv', index_col=0)
     itemDF = itemDF[itemDF['id'] == 2]
@@ -38,12 +46,12 @@ def trainAgent():
     agent = None
     environment = None
     if agent_type.upper() == "TD":
-        agent = TDAgent(.997, .1)
+        agent = TDAgent(decay, min_rand)
         environment = StockTradingEnv(itemDF, 9)
     elif agent_type.upper() == "DQN":
         agent = None
         environment = StockTradingEnv(itemDF, 9)
-        agent = DQNAgent(.997, 0.1)
+        agent = DQNAgent(decay, min_rand)
     
     if agent_type.upper() == "TD" and model_load_name != "":
         agent.model.load_state_dict(torch.load(f"./{model_load_name}.pth"))
@@ -54,7 +62,7 @@ def trainAgent():
 
     runavgtotal = 0;
     #Train Model
-    for i in range(1500):
+    for i in range(training_episodes):
      if i%20==0:
         cumulativeRewardAverage.append(runavgtotal/20)
         runavgtotal = 0
@@ -103,11 +111,11 @@ def evalAgent():
     target_model_load_name = ""
     args = sys.argv
     print(args)
-    agent_type = args[1]
-    if len(args) > 2:
-        model_load_name = args[2]
+    agent_type = args[2]
     if len(args) > 3:
-        target_model_load_name = args[3]
+        model_load_name = args[3]
+    if len(args) > 4:
+        target_model_load_name = args[4]
 
     itemDF = pd.read_csv('./item_data.csv', index_col=0)
     itemDF = itemDF[itemDF['id'] == 2]
@@ -144,8 +152,13 @@ def evalAgent():
 
 
 def main():
-    # trainAgent()
-    evalAgent()
+    args = sys.argv
+    print(args)
+    runtype = args[1]
+    if runtype.upper() == "TRAIN":
+        trainAgent()
+    elif runtype.upper() == "EVAL":
+        evalAgent()
 
 if __name__ == "__main__":
     main()
